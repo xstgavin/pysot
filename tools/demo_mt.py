@@ -99,20 +99,30 @@ def main():
     else:
         video_name = 'webcam'
     cv2.namedWindow(video_name, cv2.WND_PROP_FULLSCREEN)
-    frameIdx = 0
+    frame_idx=0
     for frame in get_frames(args.video_name):
-        frameIdx = frameIdx + 1
+        frame_idx = frame_idx+1
         if first_frame:
             try:
                 init_rect = cv2.selectROI(video_name, frame, False, False)
+                tracker.init(frame, init_rect)
             except:
                 exit()
-            tracker.init(frame, init_rect)
+            
             first_frame = False
+            try:
+                init_rect2 = cv2.selectROI(video_name, frame, False, False)
+                tracker2.init(frame, init_rect2)
+            except:
+                exit()
+            #first_frame = False
 
         else:
-            #outputs = tracker.track(frame)
-            outputs = tracker.track(frame,'track1_%d.jpg'%frameIdx)
+            print("track1---111111111------")
+            outputs = tracker.track(frame,'track1_%d.jpg'%frame_idx)
+            print("track2---222222222------")
+            outputs2 = tracker2.track(frame,'track2_%d.jpg'%frame_idx)
+            #print(frame.shape)
             if 'polygon' in outputs:
                 polygon = np.array(outputs['polygon']).astype(np.int32)
                 cv2.polylines(frame, [polygon.reshape((-1, 1, 2))],
@@ -126,7 +136,19 @@ def main():
                 cv2.rectangle(frame, (bbox[0], bbox[1]),
                               (bbox[0]+bbox[2], bbox[1]+bbox[3]),
                               (0, 255, 0), 3)
-
+            if 'polygon' in outputs2:
+                polygon2 = np.array(outputs2['polygon']).astype(np.int32)
+                cv2.polylines(frame, [polygon2.reshape((-1, 1, 2))],
+                              True, (255, 255, 0), 3)
+                mask = ((outputs2['mask'] > cfg.TRACK.MASK_THERSHOLD) * 255)
+                mask = mask.astype(np.uint8)
+                mask = np.stack([mask, mask*255, mask]).transpose(1, 2, 0)
+                frame = cv2.addWeighted(frame, 0.77, mask, 0.23, -1)
+            else:
+                bbox = list(map(int, outputs2['bbox']))
+                cv2.rectangle(frame, (bbox[0], bbox[1]),
+                              (bbox[0]+bbox[2], bbox[1]+bbox[3]),
+                              (255, 255, 0), 3)
             cv2.imshow(video_name, frame)
             cv2.waitKey(40)
 
