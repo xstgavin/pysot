@@ -98,10 +98,10 @@ def crop_json(json_elm, sub_set_crop_path,img_root, instanc_size=511):
         blurness = object_iter['blurness']
         occ = object_iter['occ']
         area = object_iter['area']
-        if area<400:
-            continue
-        if blurness<0.3:
-            continue
+        #if area<400:
+        #    continue
+        #if blurness<0.3:
+        #    continue
         if not isdir(frame_crop_base_path): makedirs(frame_crop_base_path)
         z, x = crop_like_SiamFC(im, bbox, instanc_size=instanc_size, padding=avg_chans)
         cv2.imwrite(join(frame_crop_base_path, '{:06d}.{:02d}.z.jpg'.format(0, id)), z)
