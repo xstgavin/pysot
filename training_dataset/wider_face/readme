@@ -1,0 +1,12 @@
+create widerface link which contains 
+-- train
+-----images
+-----label.txt
+-- val
+-----images
+-----label.txt
+
+
+python retinaface2json.py
+python par_crop.py 511 12
+python gen_json.py

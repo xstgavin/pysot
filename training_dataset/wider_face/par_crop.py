@@ -85,9 +85,6 @@ def crop_xml(xml, sub_set_crop_path, instanc_size=511):
 def crop_json(json_elm, sub_set_crop_path,img_root, instanc_size=511):
     #print('tmp', json_elm[0])
     frame_crop_base_path = join(sub_set_crop_path, json_elm[0].split('.')[0])
-    print(frame_crop_base_path)
-    
-
     img_path = join(img_root,json_elm[0])
     
     im = cv2.imread(img_path)
@@ -98,19 +95,15 @@ def crop_json(json_elm, sub_set_crop_path,img_root, instanc_size=511):
         blurness = object_iter['blurness']
         occ = object_iter['occ']
         area = object_iter['area']
-        #if area<400:
-        #    continue
-        #if blurness<0.3:
-        #    continue
         if not isdir(frame_crop_base_path): makedirs(frame_crop_base_path)
         z, x = crop_like_SiamFC(im, bbox, instanc_size=instanc_size, padding=avg_chans)
         cv2.imwrite(join(frame_crop_base_path, '{:06d}.{:02d}.z.jpg'.format(0, id)), z)
         cv2.imwrite(join(frame_crop_base_path, '{:06d}.{:02d}.x.jpg'.format(0, id)), x)
 
 def main(instanc_size=511, num_threads=24):
-    crop_path = './crop{:d}'.format(instanc_size)
+    crop_path = './widerFace/crop{:d}'.format(instanc_size)
     if not isdir(crop_path): mkdir(crop_path)
-    VID_base_path = './'
+    VID_base_path = './widerFace/'
     sub_sets=['train','val']
     for sub_set in sub_sets:
         ann_base_path = join(VID_base_path, sub_set+'/')
@@ -118,12 +111,12 @@ def main(instanc_size=511, num_threads=24):
         jdata = json.load(open(ann_base_path+'label.json','r'))
         n_imgs = len(jdata)
         print(n_imgs)
+        print(len(jdata.items()))
         sub_set_crop_path = crop_path
         with futures.ProcessPoolExecutor(max_workers=num_threads) as executor:
-            fs = [executor.submit(crop_json, json_elm, sub_set_crop_path, './'+sub_set,instanc_size) for  json_elm  in jdata.items()[:4]]
+            fs = [executor.submit(crop_json, json_elm, sub_set_crop_path, './widerFace/'+sub_set,instanc_size) for  json_elm  in jdata.items() ]
             for i, f in enumerate(futures.as_completed(fs)):
                 printProgress(i, n_imgs, prefix='0', suffix='Done ', barLength=80)
-
 
 if __name__ == '__main__':
     since = time.time()

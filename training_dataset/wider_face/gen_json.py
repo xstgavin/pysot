@@ -8,7 +8,7 @@ sub_sets=['train','val']
 
 for sub_set in sub_sets:
     js = {}
-    VID_base_path = './'+sub_set
+    VID_base_path = './widerFace/'+sub_set
     ann_base_path = join(VID_base_path, 'label.json')
     
 
