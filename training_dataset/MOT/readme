@@ -1,0 +1,7 @@
+create MOT2017 link which contains 
+-- train
+-- test
+
+python mot2json.py
+python par_crop.py 511 12
+python gen_json.py
