@@ -135,7 +135,7 @@ __C.DATASET.NEG = 0.2
 # improve tracking performance for otb100
 __C.DATASET.GRAY = 0.0
 
-__C.DATASET.NAMES = ('VID', 'COCO', 'DET', 'YOUTUBEBB')
+__C.DATASET.NAMES = ('VID', 'COCO', 'DET', 'YOUTUBEBB','MOT','WIDERFACE')
 
 __C.DATASET.VID = CN()
 __C.DATASET.VID.ROOT = 'training_dataset/vid/crop511'
@@ -149,6 +149,12 @@ __C.DATASET.YOUTUBEBB.ANNO = 'training_dataset/yt_bb/train.json'
 __C.DATASET.YOUTUBEBB.FRAME_RANGE = 3
 __C.DATASET.YOUTUBEBB.NUM_USE = -1  # use all not repeat
 
+__C.DATASET.MOT = CN()
+__C.DATASET.MOT.ROOT = 'training_dataset/MOT/crop511'
+__C.DATASET.MOT.ANNO = 'training_dataset/MOT/train.json'
+__C.DATASET.MOT.FRAME_RANGE = 100
+__C.DATASET.MOT.NUM_USE = 100  # use all not repeat
+
 __C.DATASET.COCO = CN()
 __C.DATASET.COCO.ROOT = 'training_dataset/coco/crop511'
 __C.DATASET.COCO.ANNO = 'training_dataset/coco/train2017.json'
@@ -160,6 +166,12 @@ __C.DATASET.DET.ROOT = 'training_dataset/det/crop511'
 __C.DATASET.DET.ANNO = 'training_dataset/det/train.json'
 __C.DATASET.DET.FRAME_RANGE = 1
 __C.DATASET.DET.NUM_USE = -1
+
+__C.DATASET.WIDERFACE = CN()
+__C.DATASET.WIDERFACE.ROOT = 'training_dataset/wider_face/crop511'
+__C.DATASET.WIDERFACE.ANNO = 'training_dataset/wider_face/train.json'
+__C.DATASET.WIDERFACE.FRAME_RANGE = 1
+__C.DATASET.WIDERFACE.NUM_USE = -1
 
 __C.DATASET.VIDEOS_PER_EPOCH = 600000
 # ------------------------------------------------------------------------ #

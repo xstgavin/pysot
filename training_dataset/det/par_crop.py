@@ -85,7 +85,7 @@ def crop_xml(xml, sub_set_crop_path, instanc_size=511):
 
 
 def main(instanc_size=511, num_threads=24):
-    crop_path = './crop{:d}'.format(instanc_size)
+    crop_path = './CROP/crop{:d}'.format(instanc_size)
     if not isdir(crop_path): mkdir(crop_path)
     VID_base_path = './ILSVRC'
     ann_base_path = join(VID_base_path, 'Annotations/DET/train/')

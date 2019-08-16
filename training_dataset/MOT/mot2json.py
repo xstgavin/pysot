@@ -22,8 +22,8 @@ for sub_set in sub_sets:
             bbox = [values[2], values[3], values[2]+values[4], values[3]+values[5]]
             elm={}
             elm['bbox']=bbox
-            elm['frame']= int(values[0])-1
-            elm['id']= int(values[1])-1
+            elm['frame']= int(values[0])
+            elm['id']= int(values[1])
             elm['conf_score']=values[6]
             elm['class']=int(values[7])-1
             elm['visibility'] = values[8]

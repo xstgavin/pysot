@@ -42,15 +42,16 @@ TRACK:
 TRAIN:
     EPOCH: 50
     START_EPOCH: 0
-    BATCH_SIZE: 128
+    BATCH_SIZE: 256
     BASE_SIZE: 0
     OUTPUT_SIZE: 17
     BASE_LR: 0.005
     CLS_WEIGHT: 1.
     LOC_WEIGHT: 1.2
     RESUME: ''
-    PRETRAINED: '/home/xiaoshengtao/SOTracking/pysot/experiments/siamrpn_alex_dwxcorr_16gpu/snapshot/bk/checkpoint_e31_novid.pth'
-
+    #PRETRAINED: '/home/xiaoshengtao/SOTracking/pysot/experiments/siamrpn_alex_dwxcorr_16gpu/snapshot/bk/checkpoint_e31_novid.pth'
+    PRETRAINED: '/home/xiaoshengtao/SOTracking/pysot/experiments/siamrpn_alex_dwxcorr_16gpu/snapshot/checkpoint_e14.pth'
+ 
     LR:
         TYPE: 'log'
         KWARGS:
@@ -66,6 +67,8 @@ TRAIN:
 
 DATASET:
     NAMES:
+    - 'MOT'
+    - 'WIDERFACE'
     - 'COCO'
     - 'DET'
     - 'VID'

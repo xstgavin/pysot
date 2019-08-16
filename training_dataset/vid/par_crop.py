@@ -96,7 +96,7 @@ def crop_video(sub_set, video, crop_path, instanc_size):
 
 
 def main(instanc_size=511, num_threads=24):
-    crop_path = './crop{:d}'.format(instanc_size)
+    crop_path = './CROP/crop{:d}'.format(instanc_size)
     if not isdir(crop_path): mkdir(crop_path)
 
     for sub_set in sub_sets:

@@ -3,7 +3,7 @@ from os.path import join
 import json
 
 
-dataDir = '.'
+dataDir = './coco/'
 for dataType in ['val2017', 'train2017']:
     dataset = dict()
     annFile = '{}/annotations/instances_{}.json'.format(dataDir,dataType)

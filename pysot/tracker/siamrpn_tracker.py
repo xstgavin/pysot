@@ -6,6 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import numpy as np
+import cv2
 import torch.nn.functional as F
 
 from pysot.core.config import cfg
@@ -90,7 +91,7 @@ class SiamRPNTracker(SiameseTracker):
                                     s_z, self.channel_average)
         self.model.template(z_crop)
 
-    def track(self, img):
+    def track(self, img, frameName="0"):
         """
         args:
             img(np.ndarray): BGR image
@@ -102,12 +103,19 @@ class SiamRPNTracker(SiameseTracker):
         s_z = np.sqrt(w_z * h_z)
         scale_z = cfg.TRACK.EXEMPLAR_SIZE / s_z
         s_x = s_z * (cfg.TRACK.INSTANCE_SIZE / cfg.TRACK.EXEMPLAR_SIZE)
+        
         x_crop = self.get_subwindow(img, self.center_pos,
                                     cfg.TRACK.INSTANCE_SIZE,
                                     round(s_x), self.channel_average)
+        # x_crop2 = self.get_subwindow(img, self.center_pos,
+        #                             cfg.TRACK.INSTANCE_SIZE,
+        #                             round(s_x), self.channel_average)
+        #print(x_crop.shape)
 
         outputs = self.model.track(x_crop)
+        
 
+        #cv2.waitKey(10)
         score = self._convert_score(outputs['cls'])
         pred_bbox = self._convert_bbox(outputs['loc'], self.anchors)
 
@@ -147,6 +155,11 @@ class SiamRPNTracker(SiameseTracker):
         cx, cy, width, height = self._bbox_clip(cx, cy, width,
                                                 height, img.shape[:2])
 
+        print(self.center_pos,score[best_idx])
+        imgx = x_crop.cpu().numpy()[0,:,:,:]
+        
+        #print(img.shape)
+        cv2.imwrite(frameName.split('.')[0]+"_%.2f.jpg"%score[best_idx],imgx.transpose(1, 2, 0))
         # udpate state
         self.center_pos = np.array([cx, cy])
         self.size = np.array([width, height])

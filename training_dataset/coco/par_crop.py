@@ -78,8 +78,8 @@ def crop_img(img, anns, set_crop_base_path, set_img_base_path, instanc_size=511)
 
 
 def main(instanc_size=511, num_threads=12):
-    dataDir = '.'
-    crop_path = './crop{:d}'.format(instanc_size)
+    dataDir = './coco/'
+    crop_path = dataDir+'/crop{:d}'.format(instanc_size)
     if not isdir(crop_path): mkdir(crop_path)
 
     for dataType in ['val2017', 'train2017']:

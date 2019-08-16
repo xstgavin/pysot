@@ -104,6 +104,9 @@ class SubDataset(object):
         frame = "{:06d}".format(frame)
         image_path = os.path.join(self.root, video,
                                   self.path_format.format(frame, track, 'x'))
+        #print(image_path)
+        if not os.path.exists(image_path):
+            print(image_path)
         image_anno = self.labels[video][track][frame]
         return image_path, image_anno
 
@@ -246,6 +249,9 @@ class TrkDataset(Dataset):
             template, search = dataset.get_positive_pair(index)
 
         # get image
+        #print(template[0], search[0])
+        # if not os.path.exists(template[0]) or os.path.exists(search[0]):
+        #     print(tempalte[0], search[0])
         template_image = cv2.imread(template[0])
         search_image = cv2.imread(search[0])
 
