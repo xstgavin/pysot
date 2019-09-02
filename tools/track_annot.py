@@ -11,6 +11,7 @@ import torch
 from torch import nn
 import numpy as np
 from glob import glob
+import json
 
 from pysot.core.config import cfg
 from pysot.models.model_builder import ModelBuilder
@@ -24,7 +25,6 @@ parser.add_argument('--snapshot', type=str, help='model name')
 parser.add_argument('--video_name', default='', type=str,
                     help='videos or image files')
 args = parser.parse_args()
-
 
 def get_frames(video_name):
     if not video_name:
@@ -66,7 +66,6 @@ def main():
     cfg.merge_from_file(args.config)
     cfg.CUDA = torch.cuda.is_available()
     device = torch.device('cuda' if cfg.CUDA else 'cpu')
-
     # create model
     model = ModelBuilder()
     
@@ -94,42 +93,66 @@ def main():
     tracker = build_tracker(model)
     tracker2 = build_tracker(model)
     first_frame = True
-    if args.video_name:
-        video_name = args.video_name.split('/')[-1].split('.')[0]
-    else:
-        video_name = 'webcam'
-    cv2.namedWindow(video_name, cv2.WND_PROP_FULLSCREEN)
-    frameIdx = 0
-    for frame in get_frames(args.video_name):
-        frameIdx = frameIdx + 1
-        if first_frame:
-            try:
-                init_rect = cv2.selectROI(video_name, frame, False, False)
-            except:
-                exit()
-            tracker.init(frame, init_rect)
-            first_frame = False
-
+    video_track_result =  args.video_name+'.pysot'
+    fid = open(video_track_result,'w')
+    trackInfo={}
+    trackInfo['vidName']=args.video_name
+    trackInfo['ids']=[] 
+    while(True):
+        gotNew=int(input('new_trackor? '))
+        if gotNew <0:
+            break
+        idInfo={}
+        idInfo['id']=gotNew
+        idInfo['trackInfo'] = []
+        first_frame = True
+        if args.video_name:
+            video_name = args.video_name.split('/')[-1].split('.')[0]
         else:
-            #outputs = tracker.track(frame)
-            outputs = tracker.track(frame)#,'track1_%d.jpg'%frameIdx)
-            if 'polygon' in outputs:
-                polygon = np.array(outputs['polygon']).astype(np.int32)
-                cv2.polylines(frame, [polygon.reshape((-1, 1, 2))],
-                              True, (0, 255, 0), 3)
-                mask = ((outputs['mask'] > cfg.TRACK.MASK_THERSHOLD) * 255)
-                mask = mask.astype(np.uint8)
-                mask = np.stack([mask, mask*255, mask]).transpose(1, 2, 0)
-                frame = cv2.addWeighted(frame, 0.77, mask, 0.23, -1)
+            video_name = 'webcam'
+        cv2.namedWindow(video_name, cv2.WND_PROP_FULLSCREEN)
+        frameIdx = 0
+        for frame in get_frames(args.video_name):
+            frameIdx = frameIdx + 1
+            if first_frame:
+              skip = int(input('is_skip?: '))
+            if first_frame and skip==0 :
+                try:
+                    init_rect = cv2.selectROI(video_name, frame, False, False)
+                    print(init_rect)
+                    dat = [frameIdx,init_rect[0],init_rect[1],init_rect[2],init_rect[3]]
+                    print(dat)
+                    idInfo['trackInfo'].append(dat)
+                except:
+                    exit()
+                tracker.init(frame, init_rect)
+                first_frame = False
+            elif first_frame  and  skip==1:
+                cv2.imshow(video_name,frame)
+                cv2.waitKey(40)
+                continue
             else:
-                bbox = list(map(int, outputs['bbox']))
-                cv2.rectangle(frame, (bbox[0], bbox[1]),
-                              (bbox[0]+bbox[2], bbox[1]+bbox[3]),
-                              (0, 255, 0), 3)
-
-            cv2.imshow(video_name, frame)
-            cv2.waitKey(40)
-
-
+                #outputs = tracker.track(frame)
+                outputs = tracker.track(frame)#,'track1_%d.jpg'%frameIdx)
+                if 'polygon' in outputs:
+                    polygon = np.array(outputs['polygon']).astype(np.int32)
+                    cv2.polylines(frame, [polygon.reshape((-1, 1, 2))],
+                                  True, (0, 255, 0), 3)
+                    mask = ((outputs['mask'] > cfg.TRACK.MASK_THERSHOLD) * 255)
+                    mask = mask.astype(np.uint8)
+                    mask = np.stack([mask, mask*255, mask]).transpose(1, 2, 0)
+                    frame = cv2.addWeighted(frame, 0.77, mask, 0.23, -1)
+                else:
+                    bbox = list(map(int, outputs['bbox']))
+                    cv2.rectangle(frame, (bbox[0], bbox[1]),
+                                  (bbox[0]+bbox[2], bbox[1]+bbox[3]),
+                                  (0, 255, 0), 3)
+                dat = [frameIdx,bbox[0],bbox[1],bbox[2],bbox[3]]
+                idInfo['trackInfo'].append(dat)
+                cv2.imshow(video_name, frame)
+                cv2.waitKey(40)
+        trackInfo['ids'].append(idInfo)
+    json.dump(trackInfo,fid,indent=4)
+    fid.close() 
 if __name__ == '__main__':
     main()
